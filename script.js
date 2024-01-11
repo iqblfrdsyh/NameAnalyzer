@@ -73,5 +73,3 @@ const predict = async () => {
 };
 
 populateCountryDropdown();
-
-populateCountryDropdown();
