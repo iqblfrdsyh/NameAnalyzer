@@ -1,6 +1,6 @@
 const apiGender = "https://api.genderize.io";
 const apiCountry = "https://restcountries.com/v3.1/all";
-const cina = ["afung", "kokoh", "ci", "afif", "meimei", "ahtong", "sabila"];
+const cina = ["afung", "kokoh", "ci", "meimei", "ahtong"];
 
 const populateCountryDropdown = async () => {
   const countryDropdown = document.getElementById("countryCode");
@@ -35,43 +35,43 @@ const predict = async () => {
   let countryCode = selectedOption.value;
   let resultContainer = document.getElementById("result");
 
-  if (!name.trim().includes(" ")) {
-    try {
-      if (name == "") {
-        alert("Nama tidak boleh kosong");
-      } else {
-        resultContainer.innerHTML = "Loading...";
-        const fetchApi = await fetch(
-          `${apiGender}/?name=${name}&country_id=${countryCode}`
-        );
-        const response = await fetchApi.json();
+  let formattedName = name.replace(/ /g, "");
 
-        console.log(response);
+  try {
+    if (formattedName === "") {
+      alert("Nama tidak boleh kosong");
+    } else {
+      resultContainer.innerHTML = "Loading...";
+      const fetchApi = await fetch(
+        `${apiGender}/?name=${formattedName}&country_id=${countryCode}`
+      );
+      const response = await fetchApi.json();
 
-        const gender = response.gender == "male" ? "Pria" : "Wanita";
-        const persentase = 100 * response.probability;
-        const count = response.count;
+      console.log(response);
 
-        const persentaseWithCheck = cina.some((cinaName) =>
-          name.includes(cinaName)
-        )
-          ? persentase + "% cina"
-          : persentase + "%";
+      const gender = response.gender == "male" ? "Pria" : "Wanita";
+      const persentase = 100 * response.probability;
+      const count = response.count;
 
-        resultContainer.innerHTML = `Nama ${name} di negara ${countryName}, kemungkinan adalah ${
-          response.gender == null ? "tidak ada" : gender
-        }. <br/><br/> Persentase: ${persentaseWithCheck} <br/> Jumlah: ${count} nama terdaftar`;
+      const persentaseWithCheck = cina.some((cinaName) =>
+        formattedName.includes(cinaName)
+      )
+        ? persentase + "% cina"
+        : persentase + "%";
 
-        console.log("Country Name:", countryName);
-        console.log("Country Code:", countryCode);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error.message);
-      resultContainer.innerHTML = "An error occurred.";
+      resultContainer.innerHTML = `Nama ${formattedName} di negara ${countryName}, kemungkinan adalah ${
+        response.gender == null ? "tidak ada" : gender
+      }. <br/><br/> Persentase: ${persentaseWithCheck} <br/> Jumlah: ${count} nama terdaftar`;
+
+      console.log("Country Name:", countryName);
+      console.log("Country Code:", countryCode);
     }
-  } else {
-    alert("Masukkan hanya satu kata sebagai nama.");
+  } catch (error) {
+    console.error("Error fetching data:", error.message);
+    resultContainer.innerHTML = "An error occurred.";
   }
 };
+
+populateCountryDropdown();
 
 populateCountryDropdown();
